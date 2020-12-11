@@ -29,7 +29,6 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 		}
 
 		$output = '';
-
 		$subtitle_type = '';
 		
 		$handle = fopen($_FILES['plik']['tmp_name'], "r");
@@ -93,7 +92,7 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
 </head>
 <body>
-	<div class="container">
+	<div class="container p-5">
 		<h1>Skrypt do przesuwania napisów do filmów w czasie</h1>
 		<p>Po prostu załaduj swój plik z napisami i wpisz o ile sekund w czasie (wprzód lub wstecz) chcesz przesunąć napisy</p>
 		<?php 
@@ -101,7 +100,7 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 				echo('<div class="alert alert-danger">'.$alert_danger.'</div>');
 			}
 		?>
-		<div class="row">
+		<div class="row mb-4">
 			<form action="" method="post" enctype="multipart/form-data" class="col-sm-4">
 				<div class="form-group">
 					<label for="plik">Plik z napisami</label>
@@ -114,6 +113,9 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 				<button type="submit" class="btn btn-primary">Wyślij</button>
 			</form>
 		</div>
+		<p>Skrypt do pobrania na <a href="https://github.com/kamilwyremski/napisy" title="Pliki źródłowe skryptu przesuwania napisów w czasie" rel="nofollow">https://github.com/kamilwyremski/napisy</a></p>
+		<p>Opis skryptu: <a href="https://blog.wyremski.pl/przesuwanie-napisow-z-filmow-w-czasie" title="Opis skryptu przesuwania napisów w czasie">https://blog.wyremski.pl/przesuwanie-napisow-z-filmow-w-czasie</a></p>
+		<p><small>Created 2020 by <a href="https://wyremski.pl" title="Full Stack Web Developer">Kamil Wyremski</a></small></p>
 	</div>
  </body>
 </html>
