@@ -37,7 +37,7 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 			if(!$subtitle_type){
 				if(preg_match("/^\d\d:\d\d:\d\d:/",$line)) {
 					$subtitle_type = 'standard';
-				}elseif(preg_match("/^\d\d:\d\d:\d\d,\d\d\d --> \d\d:\d\d:\d\d,\d\d\d$/",$line)) {
+				}elseif(preg_match("/^\d\d:\d\d:\d\d,\d\d\d --> \d\d:\d\d:\d\d,\d\d\d/",$line)) {
 					$subtitle_type = 'arrow';
 				}
 			}
