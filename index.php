@@ -39,6 +39,8 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 					$subtitle_type = 'standard';
 				}elseif(preg_match("/^\d\d:\d\d:\d\d,\d\d\d --> \d\d:\d\d:\d\d,\d\d\d/",$line)) {
 					$subtitle_type = 'arrow';
+				}elseif(preg_match("/^\[(\d+)\]\[(\d+)\](.*)/",$line)) {
+					$subtitle_type = 'square_bracket';
 				}
 			}
 			
@@ -49,15 +51,16 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 				$new_line = str_replace($time_original, $time_new, $line);
 				$output .= $new_line;
 			}elseif($subtitle_type=='arrow'){
-				$match_count = preg_match_all('/(\d\d:\d\d:\d\d),\d\d\d --> (\d\d:\d\d:\d\d),\d\d\d/i', $line, $matches);
+				$match_count = preg_match_all('/(\d\d:\d\d:\d\d)(,\d\d\d --> )(\d\d:\d\d:\d\d)(,\d\d\d)/i', $line, $matches);
 				if($match_count){
-					$time_original = strtotime($matches[1][0]);
-					$time_new = date('H:i:s',$time_original + $_POST['przesuniecie']);
-					$new_line = str_replace($matches[1][0], $time_new, $line);
-					$time_original = strtotime($matches[2][0]);
-					$time_new = date('H:i:s',$time_original + $_POST['przesuniecie']);
-					$new_line = str_replace($matches[2][0], $time_new, $new_line);
-					$output .= $new_line;
+					$output .= date('H:i:s', (strtotime($matches[1][0]) + $_POST['przesuniecie'])).$matches[2][0].date('H:i:s', (strtotime($matches[3][0]) + $_POST['przesuniecie'])).$matches[4][0]."\n";
+				}else{
+					$output .= $line;
+				}
+			}elseif($subtitle_type=='square_bracket'){
+				$match_count = preg_match_all('/^\[(\d+)\]\[(\d+)\](.*)/i', $line, $matches);
+				if($match_count){
+					$output .= '['.($matches[1][0] + $_POST['przesuniecie']).']['.($matches[2][0] + $_POST['przesuniecie']).']'.$matches[3][0]."\n";
 				}else{
 					$output .= $line;
 				}
@@ -109,7 +112,7 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 					<input type="file" class="form-control-file" id="plik" name="plik" required accept=".txt,.srt">
 				  </div>
 				<div class="form-group">
-					<label for="przesuniecie">Przesunięcie (w sekundach)</label>
+					<label for="przesuniecie">Przesunięcie (w sekundach, dodatnie jeśli mają się wyświetlać później)</label>
 					<input type="number" class="form-control" id="przesuniecie" name="przesuniecie" required step="1">
 				 </div>
 				<button type="submit" class="btn btn-primary">Wyślij</button>
