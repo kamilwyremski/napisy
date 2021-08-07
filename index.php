@@ -41,26 +41,42 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 					$subtitle_type = 'arrow';
 				}elseif(preg_match("/^\[(\d+)\]\[(\d+)\](.*)/",$line)) {
 					$subtitle_type = 'square_bracket';
+				}elseif(preg_match("/^\{(\d+)\}\{(\d+)\}(.*)/",$line)) {
+					$subtitle_type = 'brace';
 				}
 			}
 			
 			if($subtitle_type=='standard'){
 				$time_original = substr($line, 0, 8);
 				$seconds = strtotime($time_original);
-				$time_new = date('H:i:s',$seconds + $_POST['przesuniecie']);
+				$time_new = date('H:i:s',$seconds + round($_POST['przesuniecie']));
 				$new_line = str_replace($time_original, $time_new, $line);
 				$output .= $new_line;
 			}elseif($subtitle_type=='arrow'){
-				$match_count = preg_match_all('/(\d\d:\d\d:\d\d)(,\d\d\d --> )(\d\d:\d\d:\d\d)(,\d\d\d)/i', $line, $matches);
+				$match_count = preg_match_all('/(\d\d:\d\d:\d\d,\d\d\d)( --> )(\d\d:\d\d:\d\d,\d\d\d)/i', $line, $matches);
 				if($match_count){
-					$output .= date('H:i:s', (strtotime($matches[1][0]) + $_POST['przesuniecie'])).$matches[2][0].date('H:i:s', (strtotime($matches[3][0]) + $_POST['przesuniecie'])).$matches[4][0]."\n";
+					$from = DateTime::createFromFormat('H:i:s,u', $matches[1][0]);
+					$from->modify("+".($_POST['przesuniecie']*1000)." ms"); 
+
+					$to = DateTime::createFromFormat('H:i:s,u', $matches[3][0]);
+					$to->modify("+".($_POST['przesuniecie']*1000)." ms");
+
+					$output .= $from->format("H:i:s.v").$matches[2][0].$to->format("H:i:s.v")."\n";
+
 				}else{
 					$output .= $line;
 				}
 			}elseif($subtitle_type=='square_bracket'){
 				$match_count = preg_match_all('/^\[(\d+)\]\[(\d+)\](.*)/i', $line, $matches);
 				if($match_count){
-					$output .= '['.($matches[1][0] + $_POST['przesuniecie']).']['.($matches[2][0] + $_POST['przesuniecie']).']'.$matches[3][0]."\n";
+					$output .= '['.($matches[1][0] + round($_POST['przesuniecie'])).']['.($matches[2][0] + round($_POST['przesuniecie'])).']'.$matches[3][0]."\n";
+				}else{
+					$output .= $line;
+				}
+			}elseif($subtitle_type=='brace'){
+				$match_count = preg_match_all('/^\{(\d+)\}\{(\d+)\}(.*)/i', $line, $matches);
+				if($match_count){
+					$output .= '{'.($matches[1][0] + round($_POST['przesuniecie'])).'}{'.($matches[2][0] + round($_POST['przesuniecie'])).'}'.$matches[3][0]."\n";
 				}else{
 					$output .= $line;
 				}
@@ -113,14 +129,14 @@ if(!empty($_FILES['plik']) and isset($_POST['przesuniecie'])){
 				  </div>
 				<div class="form-group">
 					<label for="przesuniecie">Przesunięcie (w sekundach, dodatnie jeśli mają się wyświetlać później)</label>
-					<input type="number" class="form-control" id="przesuniecie" name="przesuniecie" required step="1">
+					<input type="number" class="form-control" id="przesuniecie" name="przesuniecie" required step="0.1">
 				 </div>
 				<button type="submit" class="btn btn-primary">Wyślij</button>
 			</form>
 		</div>
 		<p>Skrypt do pobrania na <a href="https://github.com/kamilwyremski/napisy" title="Pliki źródłowe skryptu przesuwania napisów w czasie" rel="nofollow">https://github.com/kamilwyremski/napisy</a></p>
 		<p>Opis skryptu: <a href="https://blog.wyremski.pl/przesuwanie-napisow-z-filmow-w-czasie" title="Opis skryptu przesuwania napisów w czasie">https://blog.wyremski.pl/przesuwanie-napisow-z-filmow-w-czasie</a></p>
-		<p><small>Created 2020 by <a href="https://wyremski.pl" title="Full Stack Web Developer">Kamil Wyremski</a></small></p>
+		<p><small>Created 2020 - 2021 by <a href="https://wyremski.pl" title="Full Stack Web Developer">Kamil Wyremski</a></small></p>
 	</div>
  </body>
 </html>
